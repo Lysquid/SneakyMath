@@ -8,7 +8,7 @@ Crée le: 01/12/2019
 Copyright: (c) Romain Benoit 2020
 """
 
-import os  # test
+import os
 
 from data.classes import *
 from data.textures import *
