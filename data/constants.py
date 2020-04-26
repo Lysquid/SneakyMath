@@ -1,6 +1,5 @@
-"""
-Global constants
-"""
+"""Global constants"""
+
 
 # Screen
 T_W = 70  # individual tile width and height
@@ -25,11 +24,10 @@ OFFSET_Y = T_H
 
 # Display
 FPS = 40  # frames per second
-NB_REFRESH = 2 * (
-    4) + 1  # number of refresh of the screen per cycle of the game (only change the value between parenthesis)
+NB_REFRESH = 9
+# number of refresh of the screen per cycle of the game (odd number only)
 
 # Style
-
 
 RADIUS = 0.2
 COLORS = {
@@ -37,4 +35,5 @@ COLORS = {
     "snake": [(120, 230, 120), 0.9],
     "white": [(230, 230, 230), 0.9],
     "white_txt": [(230, 230, 230), 0.85],
-    "black_txt": [(80, 80, 80), 0.8]}
+    "black_txt": [(80, 80, 80), 0.8],
+}
