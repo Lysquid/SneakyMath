@@ -8,19 +8,6 @@ from pygame import gfxdraw
 import data.constants as c
 
 
-def color_palette(color, multiplier=0.9):
-    """Color palette creation"""
-    colors = [color]
-    colors.append(tuple([round(value * multiplier) for value in colors[0]]))
-    colors.append(tuple([round(value * multiplier) for value in colors[1]]))
-    return colors
-
-
-def nb_color(value):
-    """Number color"""
-    return (150 + value * 10, 120, 100 + (10 - value) * 10)
-
-
 def draw_rounded_rec(image, color, rect, radius):
     """Draw rounded rectangle"""
     temp = pygame.Surface(rect.size, pygame.SRCALPHA, 32)
@@ -33,9 +20,7 @@ def draw_rounded_rec(image, color, rect, radius):
     ]
     for circle_center in circle_centers:
         gfxdraw.aacircle(temp, circle_center[0], circle_center[1], radius, color)
-        gfxdraw.filled_circle(
-            temp, circle_center[0], circle_center[1], radius, color
-        )
+        gfxdraw.filled_circle(temp, circle_center[0], circle_center[1], radius, color)
 
     rec_rects = [
         pygame.Rect(radius, 0, rect.w - 2 * radius, rect.h),
@@ -113,13 +98,11 @@ def relief_text(text, font, colors, depth=c.S_H):
 class Textures:
     """Class to manage textures"""
 
-    def __init__(self, view):
-
-        view.texture = self
+    def __init__(self):
         self.fonts = self.create_font()
         self.colors = {}
         for name in c.COLORS:
-            self.colors[name] = color_palette(c.COLORS[name][0], c.COLORS[name][1])
+            self.colors[name] = self.color_palette(c.COLORS[name][0], c.COLORS[name][1])
             self.colors["bg"] = self.colors["field"][2]
         self.dflt = {}
         for name in [
@@ -132,21 +115,10 @@ class Textures:
         ]:
             self.dflt[name] = self.create_dflt(name)
 
-    def set_icon(self):
-        """Set icon"""
-        icon = pygame.Surface((32, 32), pygame.SRCALPHA, 32)
-        icon.fill((255, 255, 255))
-        image = pygame.transform.smoothscale(
-            self.dflt["BodyPart"].copy(), (32, 32)
-        ).convert_alpha()
-        icon.blit(image, (0, 0))
-        # icon.set_colorkey((255, 255, 255))
-        pygame.display.set_icon(icon.convert_alpha())
-
     def create_font(self):
         """Create font list"""
         fonts = {}
-        font_path = os.path.join("data/fonts", "JosefinSans-SemiBold.ttf")
+        font_path = os.path.join("data\\fonts", "JosefinSans-SemiBold.ttf")
         font_size = round(11 * c.T_W / 20)
         fonts["menu1"] = pygame.font.Font(font_path, round(font_size * 1.5))
         fonts["menu2"] = pygame.font.Font(font_path, round(font_size * 0.9))
@@ -158,6 +130,30 @@ class Textures:
         fonts["footnote"] = pygame.font.Font(font_path, round(font_size * 0.5))
         fonts["stat"] = pygame.font.Font(font_path, round(font_size * 0.7))
         return fonts
+
+    @staticmethod
+    def color_palette(color, multiplier=0.9):
+        """Color palette creation"""
+        colors = [color]
+        colors.append(tuple([round(value * multiplier) for value in colors[0]]))
+        colors.append(tuple([round(value * multiplier) for value in colors[1]]))
+        return colors
+
+    @staticmethod
+    def nb_color(value):
+        """Number color"""
+        return (150 + value * 10, 120, 100 + (10 - value) * 10)
+
+    def icon(self):
+        """Set icon"""
+        icon = pygame.Surface((32, 32), pygame.SRCALPHA, 32)
+        icon.fill((255, 255, 255))
+        image = pygame.transform.smoothscale(
+            self.dflt["BodyPart"].copy(), (32, 32)
+        ).convert_alpha()
+        icon.blit(image, (0, 0))
+        # icon.set_colorkey((255, 255, 255))
+        return image.convert_alpha()
 
     def create_dflt(self, name):
         """Create default textures"""
@@ -377,7 +373,7 @@ class Textures:
 
     def number(self, value):
         """Render texture for number class"""
-        image = make_tile(color_palette(nb_color(value)))
+        image = make_tile(self.color_palette(self.nb_color(value)))
 
         font = self.fonts["nb"]
         nbr = str(value)
@@ -394,3 +390,8 @@ class Textures:
         self.render_ope(image, ope)
 
         return image.convert_alpha()
+
+pygame.init()
+pygame.display.set_mode((c.SCREEN_W, c.SCREEN_H))
+
+TEXTURES = Textures()

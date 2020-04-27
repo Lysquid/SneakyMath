@@ -6,12 +6,14 @@ import pygame
 
 import data.constants as c
 
+from data.textures import TEXTURES as textures
+
 
 class Tile:
     """Tile class"""
 
-    def __init__(self, view, pos):
-        self.view = view
+    def __init__(self, grid, pos):
+        self.grid = grid
         self.rect = pygame.Rect(0, 0, c.T_W, c.T_H)
         self.x = None
         self.y = None
@@ -21,17 +23,17 @@ class Tile:
     def spawn(self, pos):
         """Spawn tile"""
         self.x, self.y = pos
-        self.view.grid[self.x][self.y] = self
+        self.grid[self.x][self.y] = self
 
 
 class BodyPart(Tile):
     """Body Part of the snake class"""
 
-    def __init__(self, view, pos, ope=None):
+    def __init__(self, grid, pos, ope=None):
 
-        super().__init__(view, pos)
+        super().__init__(grid, pos)
 
-        self.image = view.texture.body_part(ope)
+        self.image = textures.body_part(ope)
 
         self.prev_x, self.prev_y = self.x, self.y
         self.dir = None
@@ -42,9 +44,9 @@ class BodyPart(Tile):
 
         self.dir = direction
 
-        self.x, self.y = self.view.new_pos(self.dir, (self.x, self.y))
+        self.x, self.y = self.grid.new_pos(self.dir, (self.x, self.y))
 
-        self.view.grid[self.x][self.y] = self
+        self.grid[self.x][self.y] = self
 
     def get_coords(self, progress, dead=False):
         """Get the coordinates"""
@@ -53,11 +55,10 @@ class BodyPart(Tile):
         else:
             offset = round(0.5 * (-((progress * 2 - 1) ** 2) + 1) * c.T_W)
         self.rect.x = (
-            self.prev_x * c.T_W
-            + ((self.dir == "right") - (self.dir == "left")) * offset
+            self.x * c.T_W + ((self.dir == "right") - (self.dir == "left")) * offset
         )
         self.rect.y = (
-            self.prev_y * c.T_H + ((self.dir == "down") - (self.dir == "up")) * offset
+            self.y * c.T_H + ((self.dir == "down") - (self.dir == "up")) * offset
         )
 
         return self.rect.topleft
@@ -66,8 +67,8 @@ class BodyPart(Tile):
 class Block(Tile):
     """Block"""
 
-    def __init__(self, view, pos):
-        super().__init__(view, pos)
+    def __init__(self, grid, pos):
+        super().__init__(grid, pos)
 
     def get_coords(self, progress=None):
         """Get the coordinates"""
@@ -79,23 +80,23 @@ class Block(Tile):
 class Number(Block):
     """Number"""
 
-    def __init__(self, view, pos=None, value=None):
-        super().__init__(view, pos)
+    def __init__(self, grid, pos=None, value=None):
+        super().__init__(grid, pos)
 
         if value is None:
             self.value = random.randint(1, 9)
         else:
             self.value = value
 
-        self.image = view.texture.number(self.value)
+        self.image = textures.number(self.value)
 
 
 class Operation(Block):
     """Operation"""
 
-    def __init__(self, view, ope, pos=None):
-        super().__init__(view, pos)
+    def __init__(self, grid, ope, pos=None):
+        super().__init__(grid, pos)
 
         self.ope = ope
 
-        self.image = view.texture.operation(self.ope)
+        self.image = textures.operation(self.ope)

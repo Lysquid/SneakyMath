@@ -1,5 +1,6 @@
 """Global constants"""
 
+GAME_NAME = "SneakyMath"
 
 # Screen
 T_W = 70  # individual tile width and height
@@ -22,7 +23,8 @@ HEADER_W = SCREEN_W
 OFFSET_X = 0  # offset of the field in the screen
 OFFSET_Y = T_H
 
-# Display
+
+# view
 FPS = 40  # frames per second
 NB_REFRESH = 9
 # number of refresh of the screen per cycle of the game (odd number only)

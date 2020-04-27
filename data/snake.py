@@ -5,16 +5,16 @@ import random
 
 import data.constants as c
 from data.tiles import BodyPart, Number, Operation
-from data.view import PygView
+from data.textures import TEXTURES as textures
 
 
 class Snake:
     """Snake class, containing a lot of information about the player
     """
 
-    def __init__(self, view):
-        view.snake = self
-        self.view = view
+    def __init__(self, grid):
+        grid.snake = self
+        self.grid = grid
         self.score = 0
         self.added_score = 0
         self.size = 1
@@ -26,23 +26,25 @@ class Snake:
         self.dir = None
         self.dir_hist = []
         self.ope = "+"
-        self.head = BodyPart(view, (c.NB_TILES_X // 2, c.NB_TILES_Y // 2), self.ope)
+        self.head = BodyPart(grid, (c.NB_TILES_X // 2, c.NB_TILES_Y // 2), self.ope)
         self.head_pos = (self.head.x, self.head.y)
         self.tail = self.head
         self.tail_pos = self.head_pos
         self.parts = [self.head]
 
-    def move_body(self, direction):
+    def move_body(self):
         """Move body"""
-        self.dir = direction
-        self.dir_hist.insert(0, self.dir)
         for i, part in enumerate(self.parts):
             if part == self.tail:
                 self.tail_pos = (part.x, part.y)
             if part == self.head:
                 continue
             part.move(self.dir_hist[i])
-        self.view.grid[self.tail_pos[0]][self.tail_pos[1]] = None
+        self.grid[self.tail_pos[0]][self.tail_pos[1]] = None
+
+    def orient(self, direction):
+        self.dir = direction
+        self.dir_hist.insert(0, self.dir)
 
     def tail_trail(self):
         """Tail trail"""
@@ -50,13 +52,13 @@ class Snake:
             block2place = self.tail_queue.pop(0)
             block2place.spawn(self.tail_pos)
         if self.inc > 0:
-            self.tail = BodyPart(self.view, self.tail_pos)
+            self.tail = BodyPart(self.grid, self.tail_pos)
             self.parts.append(self.tail)
             self.size += 1
             self.inc -= 1
         elif self.inc < 0:
             removed = self.parts.pop(-1)
-            self.view.grid[removed.x][removed.y] = None
+            self.grid[removed.x][removed.y] = None
             self.tail_pos = (self.tail.x, self.tail.y)
             self.size -= 1
             if self.parts:
@@ -65,8 +67,8 @@ class Snake:
 
     def check_front(self):
         """Check front"""
-        self.head_pos = PygView.new_pos(self.dir, self.head_pos)
-        front_tile = self.view.grid[self.head_pos[0]][self.head_pos[1]]
+        self.head_pos = self.grid.new_pos(self.dir, self.head_pos)
+        front_tile = self.grid[self.head_pos[0]][self.head_pos[1]]
         if front_tile is not None:
             if isinstance(front_tile, Number):
                 if self.ope == "+":
@@ -77,15 +79,15 @@ class Snake:
                     nb_new = 2
                 self.added_score = 1
                 for _ in range(nb_new):
-                    self.tail_queue.append(Number(self.view))
+                    self.tail_queue.append(Number(self.grid))
             if isinstance(front_tile, Operation):
                 if front_tile.ope == "+":
                     self.ope = "+"
-                    self.tail_queue.append(Operation(self.view, "-"))
+                    self.tail_queue.append(Operation(self.grid, "-"))
                 elif front_tile.ope == "-":
                     self.ope = "-"
-                    self.tail_queue.append(Operation(self.view, "+"))
-                self.head.image = self.view.texture.BodyPart(self.ope)
+                    self.tail_queue.append(Operation(self.grid, "+"))
+                self.head.image = textures.body_part(self.ope)
             elif front_tile in self.parts:
                 self.dead = True
 
