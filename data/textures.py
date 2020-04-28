@@ -95,6 +95,13 @@ def relief_text(text, font, colors, depth=c.S_H):
     return image.convert_alpha()
 
 
+class AttributeDict(dict):
+    """Class just to always return a copy of the item got through certain attributes"""
+
+    def __getitem__(self, index):
+        return dict.__getitem__(self, index).copy()
+
+
 class Textures:
     """Class to manage textures"""
 
@@ -104,7 +111,7 @@ class Textures:
         for name in c.COLORS:
             self.colors[name] = self.color_palette(c.COLORS[name][0], c.COLORS[name][1])
             self.colors["bg"] = self.colors["field"][2]
-        self.dflt = {}
+        self.dflt = AttributeDict()
         for name in [
             "field_tile",
             "field",
@@ -149,7 +156,7 @@ class Textures:
         icon = pygame.Surface((32, 32), pygame.SRCALPHA, 32)
         icon.fill((255, 255, 255))
         image = pygame.transform.smoothscale(
-            self.dflt["BodyPart"].copy(), (32, 32)
+            self.dflt["BodyPart"], (32, 32)
         ).convert_alpha()
         icon.blit(image, (0, 0))
         # icon.set_colorkey((255, 255, 255))
@@ -168,8 +175,8 @@ class Textures:
             # ! self.screen.get_size()
             image = pygame.Surface((c.FIELD_W + 2 * c.T_W, c.FIELD_H + 2 * c.T_H))
             field_tile = self.dflt["field_tile"]
-            for x in range(c.NB_TILES_X):
-                for y in range(c.NB_TILES_Y):
+            for x in range(c.NB_COLS):
+                for y in range(c.NB_ROWS):
                     coords = (c.T_W * x, c.T_H * y)
                     image.blit(field_tile, coords)
             is_alpha = False
@@ -231,7 +238,7 @@ class Textures:
 
     def header(self, snake):
         """Render header"""
-        header = self.dflt["header"].copy()
+        header = self.dflt["header"]
 
         # nb_font = self.fonts["nb"]
         # stat_font = self.fonts["stat"]
@@ -274,7 +281,7 @@ class Textures:
             + c.S_H
         )
 
-        size = str(snake.size)
+        size = str(len(snake))
         size_img = relief_text(size, self.fonts["nb"], self.colors["black_txt"], depth)
         size_rect = size_img.get_rect()
         size_rect.topleft = (
@@ -361,12 +368,12 @@ class Textures:
 
         return header.convert()
 
-    def body_part(self, ope):
+    def body_part(self, ope=None):
         """Render texture for BodyPart class"""
 
-        image = self.dflt["BodyPart"].copy()
+        image = self.dflt["BodyPart"]
 
-        if ope is not None:
+        if ope:
             self.render_ope(image, ope)
 
         return image.convert_alpha()
@@ -386,10 +393,11 @@ class Textures:
 
     def operation(self, ope):
         """Render texture for Operation class"""
-        image = self.dflt["Operation"].copy()
+        image = self.dflt["Operation"]
         self.render_ope(image, ope)
 
         return image.convert_alpha()
+
 
 pygame.init()
 pygame.display.set_mode((c.SCREEN_W, c.SCREEN_H))

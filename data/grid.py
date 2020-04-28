@@ -3,60 +3,40 @@
 import random
 
 import data.constants as c
-from data.tiles import Number, Operation
+from data.tiles import Tile, Number, Operation
 
 
 class Grid:
     """Object that stores all the tiles in their respective position"""
 
-    def __init__(self, grid=None):
-        if grid is None:
-            grid = [[None for y in range(c.NB_TILES_Y)] for x in range(c.NB_TILES_X)]
-        self._grid = grid
+    def __init__(self):
+        self._grid = [[None for y in range(c.NB_ROWS)] for x in range(c.NB_COLS)]
 
-    def __getitem__(self, index):
-        return self._grid[index]
+    def __getitem__(self, pos):
+        return self._grid[pos[0]][pos[1]]
 
-    def __setitem__(self, index, value):
-        self._grid[index] = value
+    def __setitem__(self, pos, tile):
+        self._grid[pos[0]][pos[1]] = tile
+        if isinstance(tile, Tile):
+            tile.pos = pos
 
     def generate(self):
         """Generate tiles on the grid to have an initial layout"""
-        # Set constants used for placement
-        x_offset, y_offset = round(c.NB_TILES_X / 4), round(c.NB_TILES_Y / 4)
-        # List of operations tiles with their positions
+        # Operation tiles
+        col_offset, row_offset = round(c.NB_COLS / 4), round(c.NB_ROWS / 4)
         ope_list = [
-            ("+", (x_offset, y_offset)),
-            ("+", (c.NB_TILES_X - x_offset - 1, c.NB_TILES_Y - y_offset - 1)),
-            ("-", (x_offset, c.NB_TILES_Y - y_offset - 1)),
-            ("-", (c.NB_TILES_X - x_offset - 1, y_offset)),
+            ("+", (col_offset, row_offset)),
+            ("+", (c.NB_COLS - col_offset - 1, c.NB_ROWS - row_offset - 1)),
+            ("-", (col_offset, c.NB_ROWS - row_offset - 1)),
+            ("-", (c.NB_COLS - col_offset - 1, row_offset)),
         ]
-        # Place operations tiles
         for ope, pos in ope_list:
-            Operation(self, ope, pos)
-        # Place random number tiles
+            Operation(ope, pos)
+        # Random number tiles
         for _ in range(10):
-            x, y = (
-                random.randint(0, c.NB_TILES_X - 1),
-                random.randint(0, c.NB_TILES_Y - 1),
+            rand_pos = (
+                random.randint(0, c.NB_COLS - 1),
+                random.randint(0, c.NB_ROWS - 1),
             )
-            if self[x][y] is None:  # Check if tile is free
-                Number(self, (x, y))
-
-    @staticmethod
-    def new_pos(direction, pos):
-        """Return new position"""
-        x, y = pos
-        if direction == "up":
-            y -= 1
-        if direction == "down":
-            y += 1
-        if direction == "right":
-            x += 1
-        if direction == "left":
-            x -= 1
-
-        x %= c.NB_TILES_X
-        y %= c.NB_TILES_Y
-
-        return (x, y)
+            if self[rand_pos] is None:  # Check if tile is free
+                self[rand_pos] = Number()

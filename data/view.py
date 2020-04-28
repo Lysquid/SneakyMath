@@ -4,7 +4,7 @@
 import pygame
 
 import data.constants as c
-from data.tiles import Block
+from data.tiles import Block, BodyPart
 from data.textures import TEXTURES as textures
 
 
@@ -25,7 +25,7 @@ class View:
         self.screen.fill(textures.colors["bg"])
 
     def tick(self):
-        """Sleep accordingly to FPS"""
+        """Sleep accordingly_coord to FPS"""
         self.clock.tick(c.FPS)
 
     @staticmethod
@@ -74,38 +74,45 @@ class View:
             self, "Meilleur score : " + str(best_score), "menu3", colors
         )
 
-    def draw_field(self, grid, snake, progress):
+    @staticmethod
+    def draw_field(grid, snake, progress):
         """Draw everything from the grid onto the screen"""
-        # Create the field from the default field
-        field = textures.dflt["field"].copy()
-        # Draw the blocks from the grid onto the field
-        for x in range(c.NB_TILES_X):
-            for y in range(c.NB_TILES_Y):
-                tile2draw = grid[x][y]
-                if isinstance(tile2draw, Block):
-                    field.blit(tile2draw.image, tile2draw.get_coords(progress))
+        field = textures.dflt["field"]
 
-        # Draw the snake parts (from the end) on the field
-        for part in reversed(snake.parts):
-            x, y = part.get_coords(progress, snake.dead)
-            field.blit(part.image, (x, y))
-            if x < 0:
-                x += c.FIELD_W
-            elif x + c.T_W > c.FIELD_W:
-                x -= c.FIELD_W
-            if y < 0:
-                y += c.FIELD_H
-            elif y + c.T_H > c.FIELD_H:
-                y -= c.FIELD_H
-            field.blit(part.image, (x, y))
+        # Draw the tiles
+        for col in range(c.NB_COLS):
+            for row in range(c.NB_ROWS):
+                tile = grid[(col, row)]
 
+                # Draw a block
+                if isinstance(tile, Block):
+                    field.blit(tile.image, tile.calc_coords())
+
+        for col in range(c.NB_COLS):
+            for row in range(c.NB_ROWS):
+                tile = grid[(col, row)]
+
+                # Draw a snake part
+                if isinstance(tile, BodyPart):
+                    coords = tile.calc_coords(progress, snake.dead)
+                    field.blit(tile.image, coords)
+                    x_coord, y_coord = coords
+                    if x_coord < 0:
+                        x_coord += c.FIELD_W
+                    elif x_coord + c.T_W > c.FIELD_W:
+                        x_coord -= c.FIELD_W
+                    if y_coord < 0:
+                        y_coord += c.FIELD_H
+                    elif y_coord + c.T_H > c.FIELD_H:
+                        y_coord -= c.FIELD_H
+                    field.blit(tile.image, (x_coord, y_coord))
         return field
 
-    def draw_screen(self, header, field):
+    def draw_game(self, header, field):
         """Draw screen"""
         self.screen.fill((0, 0, 0))
         self.screen.blit(field, (0, c.HEADER_H))
-
         self.screen.blit(header, (0, 0))
+
 
 VIEW = View()

@@ -55,19 +55,20 @@ def main():
             if prev_state != state:
                 if not active_game:
                     grid = Grid()
-                    snake = Snake(grid)
+                    snake = Snake()
+                    snake.place_head(grid)
+                    grid.generate()
                     direction = None
                     active_game = True
                 prev_state = state
 
             header = textures.header(snake)
 
-            prev_dir = direction
             for i_refresh in range(c.NB_REFRESH):
 
                 progress = i_refresh / c.NB_REFRESH
                 field = view.draw_field(grid, snake, progress)
-                view.draw_screen(header, field)
+                view.draw_game(header, field)
                 view.update()
 
                 view.tick()
@@ -79,16 +80,7 @@ def main():
                     state = "pause"
                     break
 
-                key = pygame.key.get_pressed()
-
-                if key[pygame.K_UP] and snake.dir != "down" and prev_dir != "up":
-                    direction = "up"
-                if key[pygame.K_DOWN] and snake.dir != "up" and prev_dir != "down":
-                    direction = "down"
-                if key[pygame.K_RIGHT] and snake.dir != "left" and prev_dir != "right":
-                    direction = "right"
-                if key[pygame.K_LEFT] and snake.dir != "right" and prev_dir != "left":
-                    direction = "left"
+                direction = events.calc_dir(snake.dir, direction)
 
             if snake.dead:
                 header = textures.header(snake)
@@ -98,15 +90,14 @@ def main():
                     new_best = True
                 break
 
-            if prev_dir:
+            if snake.dir:
                 snake.calc_score()
-                snake.move_body()
-                snake.tail_trail()
-                snake.check_front()
-                snake.move_head()
+                snake.move_body(grid)
+                snake.behind_trail(grid)
+                snake.check_front(grid)
+                snake.place_head(grid)
                 snake.check_size()
-            if direction:
-                snake.orient(direction)
+            snake.dir = direction
 
         # Pause
         while main_loop and state == "pause":
@@ -121,11 +112,10 @@ def main():
             actions = events.get()
             if "quit" in actions:
                 main_loop = False
-            if "escape" in actions:
-                state = "menu"
-            if "enter" in actions:
+            if "unpause" in actions:
                 state = "game"
 
+        # Game over
         while main_loop and state == "game over":
 
             if prev_state != state:
