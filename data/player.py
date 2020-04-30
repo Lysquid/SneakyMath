@@ -38,15 +38,17 @@ class Player:
             pickler.dump(self.best_score)
 
     def start_game(self):
+        """Start the game reseting the score and the goal"""
         self.score = 0
         self.goal = random.randint(10, 20)
 
     def inc_score(self):
+        """Increment the score"""
         self.goal_reached = True
         self.added_score += 20
 
     def new_goal(self):
-        """Generate new goal"""
+        """Generate a new goal"""
 
         # 1st code
         # (int(str(score)[::-1]) - 1) % 50 + 1
@@ -68,12 +70,13 @@ class Player:
         self.goal = new_goal
 
     def calc_score(self):
-        """Calculate score"""
+        """Calculate the score"""
         self.score += self.added_score
         self.added_score = 0
         self.goal_reached = False
 
     def compare_scores(self):
+        """Determine if the score is a new best"""
         if self.score > self.best_score:
             self.best_score = self.score
             self.new_best = True
