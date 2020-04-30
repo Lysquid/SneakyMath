@@ -20,8 +20,6 @@ class Player:
         self.goal = None
         self.goal_reached = False
 
-        self.retrieve_scores()
-
     def retrieve_scores(self):
         """Retrieve scores from the score file"""
         if not os.path.isdir(c.FILES_PATH):
