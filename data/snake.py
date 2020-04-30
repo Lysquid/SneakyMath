@@ -1,98 +1,104 @@
 """Snake class file"""
 
-import math
-import random
-
 import data.constants as c
-from data.tiles import BodyPart, Number, Operation
-from data.textures import TEXTURES as textures
+from data.tiles import SnakePart, Number, Operation
 
 
 class Snake:
-    """Snake class, containing a lot of information about the player
+    """Snake class
     """
 
     def __init__(self):
-        self.score = 0
-        self.added_score = 0
-        self.inc = 4
-        self.goal = random.randint(10, 20)
-        self.goal_reached = False
         self.dead = False
+        self.inc = 4
+        center_pos = (c.NB_COLS // 2, c.NB_ROWS // 2)
+        self.parts = [SnakePart(center_pos)]
         self.behind_queue = []
-        self.dir = None
-        self.head = BodyPart((c.NB_COLS // 2, c.NB_ROWS // 2))
-        self._ope = None
-        self.ope = "+"  # This second col also change the image
-        self.parts = [self.head]
-        self.tail = self.parts[0]
         self.behind_pos = None
+        self.ope = "change to +"
 
     def __len__(self):
         return len(self.parts)
 
-    def _get_ope(self):
-        return self._ope
+    def _get_head(self):
+        return self.parts[0]
 
-    def _set_ope(self, ope):
-        self._ope = ope
-        if self.head:
-            self.head.image = textures.body_part(ope)
+    def _get_tail(self):
+        return self.parts[-1]
 
-    ope = property(_get_ope, _set_ope)
+    def _get_dir(self):
+        if self.parts:
+            return self.head.dir
+        return None
 
-    def move_body(self, grid):
-        """Move body"""
+    head = property(_get_head)
+    tail = property(_get_tail)
+    dir = property(_get_dir)
+
+    def place_head(self, grid):
+        """Place the head onto the screen
+        and eventually change its texture
+        """
+        grid[self.head.pos] = self.head
+        if self.ope.startswith("change"):
+            self.ope = self.ope[-1]
+            self.head.set_ope(self.ope)
+
+    def move_body(self, grid, direction):
+        """Move each body part one by one
+        starting from the head
+        """
         for part in self.parts:
             if part == self.tail:
                 self.behind_pos = part.pos
-
             grid[part.pos] = None
-            part.move()
             prev_dir = part.dir
-            if part is self.head:
-                part.dir = self.dir
-            else:
-                part.dir = direction
+            part.dir = direction
+            part.move()
+            if part is not self.head:
                 grid[part.pos] = part
             direction = prev_dir
 
     def behind_trail(self, grid):
-        """Behind trail"""
+        """Handle what's behind the snake
+        (new block, adding or removing a body part)
+        """
         if self.behind_queue and not self.inc:
             grid[self.behind_pos] = self.behind_queue.pop(0)
         if self.inc > 0:
-            self.tail = BodyPart(self.behind_pos)
-            self.parts.append(self.tail)
+            self.parts.append(SnakePart())
+            grid[(self.behind_pos)] = self.tail
             self.inc -= 1
         elif self.inc < 0:
             removed_part = self.parts.pop(-1)
             grid[removed_part.pos] = None
             self.behind_pos = removed_part.pos
             self.inc += 1
-            if self.parts:
-                self.tail = self.parts[-1]
-            else:
+            if not self.parts:
                 self.dead = True
 
-    def check_front(self, grid):
-        """Check front"""
+    def check_front(self, grid, player):
+        """Check the front tile and react
+        depending of what's found
+        """
+        if not self.parts:
+            return
         front_tile = grid[self.head.pos]
         if front_tile:
             # Face a number
             if isinstance(front_tile, Number):
-                if self.ope == "+":
+                if "+" in self.ope:
                     self.inc += front_tile.value
                     nbr_new = 2
-                elif self.ope == "-":
+                elif "-" in self.ope:
                     self.inc -= front_tile.value
                     nbr_new = 2
-                self.added_score = 1
+                player.added_score += 1
                 for _ in range(nbr_new):
                     self.behind_queue.append(Number())
             # Face an operation
             if isinstance(front_tile, Operation):
-                self.ope = front_tile.ope
+                self.ope = "change to " + front_tile.ope
                 if front_tile.ope == "+":
                     self.behind_queue.append(Operation("-"))
                 elif front_tile.ope == "-":
@@ -101,50 +107,17 @@ class Snake:
             elif front_tile in self.parts:
                 self.dead = True
 
-    def place_head(self, grid):
-        """Move head"""
-        grid[self.head.pos] = self.head
+    def goal_reached(self, player):
+        """Check if the goal is reached"""
+        if len(self) == player.goal and not self.inc:
+            player.goal_reached = True
 
-    def check_size(self):
-        """Check size"""
-        if len(self) == self.goal and not self.inc:
-
-            self.goal = self.new_goal(self.score, self.goal)
-            self.goal_reached = True
-            self.added_score = 20
             n_nbrs = sum(isinstance(block, Number) for block in self.behind_queue)
             new_n_nbrs = round(n_nbrs / 2)
-            new_tail = []
+            new_behind = []
             for block in self.behind_queue:
                 if new_n_nbrs > 0 and isinstance(block, Number):
                     new_n_nbrs -= 1
                 else:
-                    new_tail.append(block)
-            self.behind_queue = new_tail
-            # !! Delete all numbers code:
-            # self.behind_queue = [block for block in  if not isinstance(block, Number)]
-
-    def new_goal(self, score, goal):
-        """Generate new goal"""
-        # 1st code
-        # (int(str(score)[::-1]) - 1) % 50 + 1
-
-        # 2nd code
-        # return (goal + score - 1) % (35 + round(score / 15)) + 1
-
-        # Natan's code
-        bound = 8 + round(1.5 * math.sqrt(score))
-        diff = min(40, 3 + score ** 1.2 // 70)
-        prev_goal = goal
-        while prev_goal < goal + diff and prev_goal > goal - diff:
-            goal = random.randint(
-                max(1, min(15, prev_goal - bound)),
-                min(max(prev_goal + bound, 20), 35 + math.floor(math.sqrt(score))),
-            )
-        return goal
-
-    def calc_score(self):
-        """Calculate score"""
-        self.score += self.added_score
-        self.added_score = 0
-        self.goal_reached = False
+                    new_behind.append(block)
+            self.behind_queue = new_behind

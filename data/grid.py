@@ -3,11 +3,13 @@
 import random
 
 import data.constants as c
-from data.tiles import Tile, Number, Operation
+from data.tiles import SnakePart, Number, Operation, Tile
 
 
 class Grid:
-    """Object that stores all the tiles in their respective position"""
+    """Object that stores all the tiles
+    in their respective position
+    """
 
     def __init__(self):
         self._grid = [[None for y in range(c.NB_ROWS)] for x in range(c.NB_COLS)]
@@ -20,23 +22,39 @@ class Grid:
         if isinstance(tile, Tile):
             tile.pos = pos
 
+    def __repr__(self):
+        string = ""
+        for row in range(c.NB_ROWS):
+            for col in range(c.NB_COLS):
+                tile = self[(col, row)]
+                if isinstance(tile, SnakePart):
+                    string += "S"
+                elif isinstance(tile, Number):
+                    string += str(tile.value)
+                elif isinstance(tile, Operation):
+                    string += "O"
+                else:
+                    string += "·"
+            string += "\n"
+        return string
+
     def generate(self):
-        """Generate tiles on the grid to have an initial layout"""
+        """Generate tiles on the grid in an initial layout"""
         # Operation tiles
         col_offset, row_offset = round(c.NB_COLS / 4), round(c.NB_ROWS / 4)
-        ope_list = [
+        ope_list = (
             ("+", (col_offset, row_offset)),
             ("+", (c.NB_COLS - col_offset - 1, c.NB_ROWS - row_offset - 1)),
             ("-", (col_offset, c.NB_ROWS - row_offset - 1)),
             ("-", (c.NB_COLS - col_offset - 1, row_offset)),
-        ]
+        )
         for ope, pos in ope_list:
-            Operation(ope, pos)
+            self[pos] = Operation(ope)
         # Random number tiles
         for _ in range(10):
-            rand_pos = (
+            nbr_pos = (
                 random.randint(0, c.NB_COLS - 1),
                 random.randint(0, c.NB_ROWS - 1),
             )
-            if self[rand_pos] is None:  # Check if tile is free
-                self[rand_pos] = Number()
+            if self[nbr_pos] is None:
+                self[nbr_pos] = Number()

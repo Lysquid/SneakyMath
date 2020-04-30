@@ -1,14 +1,15 @@
-"""Events"""
+"""Events class file"""
 
 import pygame as pg
 
 
 class Events:
-    """Events class"""
+    """Events class, handles the events from the player
+    """
 
     def __init__(self):
         self.actions_keys = {
-            pg.K_ESCAPE: ("excape", "unpause"),
+            pg.K_ESCAPE: ("escape", "unpause"),
             pg.K_RETURN: ("enter", "menu", "unpause"),
             pg.K_F4: ("f4",),
             pg.K_UP: ("up",),
@@ -32,7 +33,9 @@ class Events:
         self.dir_list = []
 
     def get(self):
-        """Handle pgame events to return corresponding game events"""
+        """Handle pygame events to return
+        corresponding game events
+        """
         keys_down = pg.key.get_pressed()
         actions = []
         for event in pg.event.get():
@@ -51,46 +54,19 @@ class Events:
         return actions
 
     def track_dir(self, event):
-        """Keeps track of directional key presses"""
+        """Keeps track of directional key states"""
         direction = self.dir_keys[event.key]
         if event.type == pg.KEYDOWN:
-            self.dir_list.append(direction)
+            self.dir_list.insert(0, direction)
         if event.type == pg.KEYUP:
             if direction in self.dir_list:
                 self.dir_list.remove(direction)
 
-    def calc_dir(self, snake_dir, prev_dir):
-        """Return the direction based on the """
+    def calc_dir(self, snake_dir):
+        """Return the new direction
+        based on the direction list
+        """
         for potential_dir in self.dir_list:
             if potential_dir != self.opposite_dir[snake_dir]:
                 return potential_dir
-        return prev_dir
-
-    @staticmethod
-    def get_dir(actions, prev_dir):
-        """Handle mouvements events to return corresponding direction"""
-        direction = prev_dir
-
-        keys_down = pg.key.get_pressed()
-        if keys_down[pg.K_UP] and prev_dir != "down":
-            direction = "up"
-        if keys_down[pg.K_DOWN] and prev_dir != "up":
-            direction = "down"
-        if keys_down[pg.K_RIGHT] and prev_dir != "left":
-            direction = "right"
-        if keys_down[pg.K_LEFT] and prev_dir != "right":
-            direction = "left"
-        print(actions)
-        if "up" in actions and prev_dir != "down":
-            direction = "up"
-        if "down" in actions and prev_dir != "up":
-            direction = "down"
-        if "right" in actions and prev_dir != "left":
-            direction = "right"
-        if "left" in actions and prev_dir != "right":
-            direction = "left"
-
-        return direction
-
-
-EVENTS = Events()
+        return None

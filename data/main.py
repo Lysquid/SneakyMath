@@ -1,43 +1,41 @@
-"""Main program"""
+"""Main program file"""
 
 import pygame
 
 import data.constants as c
-from data.snake import Snake
-from data.view import VIEW
-from data.textures import TEXTURES
-from data.events import EVENTS
+from data.events import Events
 from data.grid import Grid
+from data.player import Player
+from data.snake import Snake
+from data.view import View
 
 
 def main():
     """Main program"""
 
-    view = VIEW
-    textures = TEXTURES
-    events = EVENTS
+    pygame.init()
+    view = View()
+    events = Events()
+    player = Player()
 
-    # Window settings
-    view.customize_window()
+    view.init_textures()
     view.update()
+    player.retrieve_scores()
 
-    # Booleans
     main_loop = True
-    state = "menu"
-    prev_state = None
     active_game = False
-    best_score = 0
-    new_best = False
+    prev_state = None
+    state = "MENU"
 
-    # Main loop
+    # Main looop
     while main_loop:
 
-        # Menu
-        while main_loop and state == "menu":
+        # Menu loop
+        while main_loop and state == "MENU":
 
             if prev_state != state:
                 view.draw_menu()
-                pygame.display.flip()
+                view.update()
                 active_game = False
                 prev_state = state
             else:
@@ -47,60 +45,70 @@ def main():
             if "quit" in actions:
                 main_loop = False
             if "enter" in actions:
-                state = "game"
+                state = "GAME"
 
-        # Game
-        while main_loop and state == "game":
+        # Game loop
+        while main_loop and state == "GAME":
+
+            if prev_state != "PAUSE":
+                frames = 0
 
             if prev_state != state:
                 if not active_game:
                     grid = Grid()
                     snake = Snake()
+                    player.start_game()
                     snake.place_head(grid)
                     grid.generate()
                     direction = None
                     active_game = True
                 prev_state = state
 
-            header = textures.header(snake)
+            view.draw_header(snake, player)
 
-            for i_refresh in range(c.NB_REFRESH):
+            while frames < c.NB_FRAMES:
 
-                progress = i_refresh / c.NB_REFRESH
-                field = view.draw_field(grid, snake, progress)
-                view.draw_game(header, field)
+                view.draw_field(grid, snake, frames)
+                view.draw_game()
                 view.update()
 
                 view.tick()
                 actions = events.get()
                 if "quit" in actions:
                     main_loop = False
-                    break
                 if "escape" in actions:
-                    state = "pause"
+                    state = "PAUSE"
+                if not (main_loop and state == "GAME"):
                     break
 
-                direction = events.calc_dir(snake.dir, direction)
+                new_dir = events.calc_dir(snake.dir)
+                if new_dir:
+                    direction = new_dir
+
+                frames += 1
 
             if snake.dead:
-                header = textures.header(snake)
-                state = "game over"
-                if snake.score > best_score:
-                    best_score = snake.score
-                    new_best = True
+                state = "GAME OVER"
+            if not (main_loop and state == "GAME"):
                 break
+            if not direction:
+                continue
 
-            if snake.dir:
-                snake.calc_score()
-                snake.move_body(grid)
-                snake.behind_trail(grid)
-                snake.check_front(grid)
-                snake.place_head(grid)
-                snake.check_size()
-            snake.dir = direction
+            player.calc_score()
+
+            snake.place_head(grid)
+            snake.move_body(grid, direction)
+            snake.behind_trail(grid)
+            snake.check_front(grid, player)
+
+            snake.goal_reached(player)
+
+            if player.goal_reached:
+                player.inc_score()
+                player.new_goal()
 
         # Pause
-        while main_loop and state == "pause":
+        while main_loop and state == "PAUSE":
 
             if prev_state != state:
                 view.draw_pause()
@@ -113,15 +121,17 @@ def main():
             if "quit" in actions:
                 main_loop = False
             if "unpause" in actions:
-                state = "game"
+                state = "GAME"
 
         # Game over
-        while main_loop and state == "game over":
+        while main_loop and state == "GAME OVER":
 
             if prev_state != state:
-                view.draw_game_over(snake.score, best_score, new_best)
+                player.calc_score()
+                player.compare_scores()
+                view.draw_game_over(player)
                 view.update()
-                new_best = False
+                player.save_scores()
                 prev_state = state
             else:
                 view.tick()
@@ -130,8 +140,8 @@ def main():
             if "quit" in actions:
                 main_loop = False
             if "escape" in actions:
-                state = "menu"
+                state = "MENU"
             if "enter" in actions:
-                state = "menu"
+                state = "MENU"
 
     pygame.quit()

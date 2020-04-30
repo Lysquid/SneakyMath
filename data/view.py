@@ -1,118 +1,118 @@
-"""view class file"""
-
+"""View class file"""
 
 import pygame
 
 import data.constants as c
-from data.tiles import Block, BodyPart
 from data.textures import TEXTURES as textures
+from data.tiles import Block
+from data.functions import blit_alpha
 
 
 class View:
-    """
-    General class which is the main storage for the game :
-    contains the screen to show and the grid of tiles
+    """View class, handles what is shown
+    on the screen and when it's shown
     """
 
     def __init__(self):
-        self.screen = pygame.display.set_mode((c.SCREEN_W, c.SCREEN_H))
+        self.screen = pygame.display.set_mode(c.SCREEN_SIZE)
         self.clock = pygame.time.Clock()
+        self.header = None
+        self.field = None
 
-    def customize_window(self):
-        """Customize window"""
+    def init_textures(self):
+        """Initialize the textures
+        and customize the window with it
+        """
+        textures.create()
+        pygame.display.set_icon(textures.dflt["icon"])
+        self.screen.fill(textures.color["background"])
         pygame.display.set_caption(c.GAME_NAME)
-        pygame.display.set_icon(textures.icon())
-        self.screen.fill(textures.colors["bg"])
 
     def tick(self):
-        """Sleep accordingly_coord to FPS"""
+        """Sleep accordingly to the max FPS"""
         self.clock.tick(c.FPS)
 
     @staticmethod
     def update():
-        """Update screen"""
+        """Update the screen"""
         pygame.display.flip()
 
     def draw_menu(self):
         """Draw the menu screen"""
-        self.screen.fill(textures.colors["bg"])
-        textures.render_text(self, c.GAME_NAME.upper(), "title")
-        textures.render_text(self, "Appuyer sur [Enter] pour commencer", "menu2")
-        textures.render_text(
+        self.screen.fill(textures.color["background"])
+        textures.text(self, "title", c.GAME_NAME.upper())
+        textures.text(self, "menu2", "Appuyer sur [Enter] pour commencer")
+        textures.text(
             self,
+            "footnote",
             "© Créé par Romain avec l'aide de Natan "
             + "pour le prix Bernard Novelli des Trophées Tangente 2020",
-            "footnote",
         )
 
     def draw_pause(self):
-        """Draw pause screen"""
-        self.screen.fill(textures.colors["bg"])
-        textures.render_text(
-            self, "Pause", "menu1", textures.color_palette(textures.nb_color(1), 0.8)
-        )
-        textures.render_text(self, "Appuyer sur [Entrer] pour reprendre", "menu2")
+        """Draw the pause screen"""
+        self.screen.fill(textures.color["background"])
+        textures.text(self, "pause", "Pause")
+        textures.text(self, "menu2", "Appuyer sur [Entrer] pour reprendre")
 
-    def draw_game_over(self, score, best_score, new_best):
-        """Draw game over screen"""
-        overlay = pygame.Surface((c.SCREEN_W, c.SCREEN_H))
+    def draw_game_over(self, player):
+        """Draw the game over screen"""
+        overlay = pygame.Surface(c.SCREEN_SIZE)
         overlay.fill((0, 0, 0))
         overlay.set_alpha(180)
         self.screen.blit(overlay, (0, 0))
-        textures.render_text(
-            self,
-            "Game Over",
-            "menu1",
-            textures.color_palette(textures.nb_color(9), 0.8),
-        )
-        textures.render_text(self, "Score : " + str(score), "menu2")
-        if new_best:
-            colors = textures.colors["snake"]
+        textures.text(self, "game_over", "Game Over")
+        textures.text(self, "menu2", "Score : " + str(player.score))
+        if player.new_best:
+            color = textures.color["snake"]
         else:
-            colors = textures.colors["white_txt"]
-        textures.render_text(
-            self, "Meilleur score : " + str(best_score), "menu3", colors
+            color = textures.color["white_txt"]
+        textures.text(
+            self, "menu3", "Meilleur score : " + str(player.best_score), color
         )
 
-    @staticmethod
-    def draw_field(grid, snake, progress):
+    def draw_header(self, snake, player):
+        """Draw the header and save it for the frames cycle"""
+        self.header = textures.render_header(snake, player)
+
+    def draw_field(self, grid, snake, frames):
         """Draw everything from the grid onto the screen"""
-        field = textures.dflt["field"]
+        field = textures.dflt["field"].copy()
+        progress = frames / c.NB_FRAMES
 
-        # Draw the tiles
-        for col in range(c.NB_COLS):
-            for row in range(c.NB_ROWS):
+        # Draw the blocks
+        for row in range(c.NB_ROWS):
+            for col in range(c.NB_COLS):
                 tile = grid[(col, row)]
-
-                # Draw a block
                 if isinstance(tile, Block):
-                    field.blit(tile.image, tile.calc_coords())
+                    rect = tile.calc_rect()
+                    field.blit(tile.image, rect.topleft)
 
-        for col in range(c.NB_COLS):
-            for row in range(c.NB_ROWS):
-                tile = grid[(col, row)]
+        # Draw the snake parts
+        for part in reversed(snake.parts):
+            if part is snake.tail and snake.inc < 0:
+                alpha = round((1 - progress) * 255)
+            else:
+                alpha = None
+            rects = []
+            rect = part.calc_rect(progress, snake)
+            rects.append(rect)
+            rect = rect.copy()
+            if rect.x < 0:
+                rect.x += c.FIELD_W
+            elif rect.x + c.T_W > c.FIELD_W:
+                rect.x -= c.FIELD_W
+            if rect.y < 0:
+                rect.y += c.FIELD_H
+            elif rect.y + c.T_H > c.FIELD_H:
+                rect.y -= c.FIELD_H
+            rects.append(rect)
+            for rect in rects:
+                blit_alpha(field, part.image, rect.topleft, alpha)
+        self.field = field
 
-                # Draw a snake part
-                if isinstance(tile, BodyPart):
-                    coords = tile.calc_coords(progress, snake.dead)
-                    field.blit(tile.image, coords)
-                    x_coord, y_coord = coords
-                    if x_coord < 0:
-                        x_coord += c.FIELD_W
-                    elif x_coord + c.T_W > c.FIELD_W:
-                        x_coord -= c.FIELD_W
-                    if y_coord < 0:
-                        y_coord += c.FIELD_H
-                    elif y_coord + c.T_H > c.FIELD_H:
-                        y_coord -= c.FIELD_H
-                    field.blit(tile.image, (x_coord, y_coord))
-        return field
-
-    def draw_game(self, header, field):
-        """Draw screen"""
+    def draw_game(self):
+        """Draw the game screen"""
         self.screen.fill((0, 0, 0))
-        self.screen.blit(field, (0, c.HEADER_H))
-        self.screen.blit(header, (0, 0))
-
-
-VIEW = View()
+        self.screen.blit(self.field, (0, c.HEADER_H))
+        self.screen.blit(self.header, (0, 0))
