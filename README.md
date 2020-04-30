@@ -6,5 +6,5 @@ You control the snake and you can eat the blocks on the grid. But here is the tw
 ## Goal
 Unlike the classic Snake, your goal is not to grow the biggest, but reached the exact size indicated as the goal on the top of the screen. When you do so, you get lots of points and a new goal is generated, usually harder to reach! All of this, while, of course, avoiding to get into the tail of your snake.
 ## Context
-This game was created for the Prix Bernard Novelli 2020.
+This game was created for the Prix Bernard Novelli 2020:
 http://www.tropheestangente.com/PBN.php
