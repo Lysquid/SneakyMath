@@ -24,6 +24,8 @@ class Player:
 
     def retrieve_scores(self):
         """Retrieve scores from the score file"""
+        if not os.path.isdir(c.FILES_PATH):
+            os.makedirs(c.FILES_PATH)
         if os.path.isfile(self.scores_path):
             with open(self.scores_path, "rb") as score_file:
                 unpickler = pickle.Unpickler(score_file)
