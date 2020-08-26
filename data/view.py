@@ -28,9 +28,9 @@ class View:
         self.screen.fill(textures.color["background"])
         pygame.display.set_caption(c.GAME_NAME)
 
-    def tick(self):
+    def tick(self, fps=c.FPS):
         """Sleep accordingly to the max FPS"""
-        self.clock.tick(c.FPS)
+        self.clock.tick(fps)
 
     @staticmethod
     def update():

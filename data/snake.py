@@ -42,9 +42,10 @@ class Snake:
         grid[self.head.pos] = self.head
         if self.ope.startswith("change"):
             self.ope = self.ope[-1]
-            self.head.set_ope(self.ope)
+            self.head.ope = self.ope
+            self.head.update_image()
 
-    def move_body(self, grid, direction):
+    def propagate(self, grid, direction, eating):
         """Move each body part one by one
         starting from the head
         """
@@ -59,7 +60,28 @@ class Snake:
                 grid[part.pos] = part
             direction = prev_dir
 
-    def behind_trail(self, grid):
+            if eating:
+                print("")
+
+            prev_eating = part.eating
+            part.eating = eating
+            eating = prev_eating
+
+            if part.eating and not part.filled:
+
+                part.filled = True
+                eating = False
+                if part.eating >= c.SCORE_INC:
+                    part.eating = False
+                else:
+                    if not part.eating:
+                        part.eating = True
+                    else:
+                        part.eating += 1
+
+            part.update_image()
+
+    def behind_trail(self, grid, player):
         """Handle what's behind the snake
         (new block, adding or removing a body part)
         """
@@ -77,7 +99,7 @@ class Snake:
             if not self.parts:
                 self.dead = True
 
-    def check_front(self, grid, player):
+    def check_front(self, grid):
         """Check the front tile and react
         depending of what's found
         """
@@ -93,7 +115,6 @@ class Snake:
                 elif "-" in self.ope:
                     self.inc -= front_tile.value
                     nbr_new = 2
-                player.added_score += 1
                 for _ in range(nbr_new):
                     self.behind_queue.append(Number())
             # Face an operation

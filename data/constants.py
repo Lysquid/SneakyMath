@@ -33,6 +33,9 @@ OFFSET_Y = T_H
 FPS = 40
 NB_FRAMES = 9
 
+# Gameplay
+SCORE_INC = 3
+
 
 # Style
 RADIUS = 0.2

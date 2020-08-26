@@ -13,7 +13,6 @@ class Player:
 
     def __init__(self):
         self.score = 0
-        self.added_score = 0
         self.best_score = 0
         self.new_best = False
         self.scores_path = os.path.join(c.FILES_PATH, "scores")
@@ -42,11 +41,6 @@ class Player:
         self.score = 0
         self.goal = random.randint(10, 20)
 
-    def inc_score(self):
-        """Increment the score"""
-        self.goal_reached = True
-        self.added_score += 20
-
     def new_goal(self):
         """Generate a new goal"""
 
@@ -56,23 +50,29 @@ class Player:
         # 2nd code
         # return (goal + score - 1) % (35 + round(score / 15)) + 1
 
-        # Natan's code
+        # 3rd code
+        # new_goal = random.randint(
+        #         max(self.score + c.SCORE_INC, min(15, self.goal - bound)),
+        #         min(max(self.goal + bound, 20), 35 + math.floor(math.sqrt(self.score)),),
+        # )
+
+        # Current code
         bound = 8 + round(1.5 * math.sqrt(self.score))
         diff = min(40, 3 + self.score ** 1.2 // 70)
         new_goal = self.goal
         while (new_goal + diff) > self.goal > (new_goal - diff):
             new_goal = random.randint(
-                max(1, min(15, self.goal - bound)),
+                max(self.score + c.SCORE_INC, min(15, self.goal - bound)),
                 min(
                     max(self.goal + bound, 20), 35 + math.floor(math.sqrt(self.score)),
                 ),
             )
+
         self.goal = new_goal
 
-    def calc_score(self):
+    def calc_score(self, parts):
         """Calculate the score"""
-        self.score += self.added_score
-        self.added_score = 0
+        self.score = sum([part.filled for part in parts])
         self.goal_reached = False
 
     def compare_scores(self):

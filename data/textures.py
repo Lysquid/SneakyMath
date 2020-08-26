@@ -32,7 +32,7 @@ class Textures:
         all the fonts of the game
         """
         fonts = {}
-        font_path = os.path.join("data\\fonts", "JosefinSans-SemiBold.ttf")
+        font_path = os.path.join("data/fonts", "JosefinSans-SemiBold.ttf")
 
         font = func.get_font(font_path, 1.5)
         fonts["pause"] = font
@@ -74,6 +74,9 @@ class Textures:
         color = func.color_palette((120, 230, 120))
         colors["snake"] = color
 
+        color = func.color_palette((250, 250, 100))
+        colors["filled"] = color
+
         color = func.color_palette((230, 230, 230))
         colors["white"] = color
 
@@ -111,13 +114,31 @@ class Textures:
         dflt["field"] = img.convert_alpha()
 
         size = (c.FIELD_W, c.T_H)
+        color = self.color["background"]
         img = pg.Surface(size)
-        img.fill(self.color["background"])
+        img.fill(color)
         dflt["header"] = img.convert()
 
-        img = func.tile(self.color["snake"])
+        color = self.color["snake"]
+        img = func.tile(color)
         body_part = img
         dflt["snake_part"] = img.convert_alpha()
+
+        size = list(c.T_SIZE)
+        size[0] += 2 * c.BORDER
+        size[1] += 2 * c.BORDER
+        radius = c.RADIUS * 2
+        color = self.color["filled"]
+        img = func.tile(color)
+        dflt["filled_snake_part"] = img.convert_alpha()
+
+        color = self.color["snake"]
+        img = func.tile(color, size=size, rounded=radius)
+        dflt["snake_part_eating"] = img.convert_alpha()
+
+        color = self.color["filled"]
+        img = func.tile(color, size=size, rounded=radius)
+        dflt["filled_snake_part_eating"] = img.convert_alpha()
 
         img = body_part.copy()
         size = (32, 32)
@@ -128,40 +149,16 @@ class Textures:
         dflt["icon"] = img.convert_alpha()
         # icon.set_colorkey((255, 255, 255))
 
-        img = body_part.copy()
         font = self.font["operation"]
         color = self.color["black_txt"]
         text = func.relief_text("+", font, color)
-        ope_plus_text = text
-        rect = text.get_rect()
-        rect.x = round((c.T_W - rect.w) / 2)
-        rect.y = round((c.T_H - rect.h - c.S_H) / 2)
-        ope_plus_rect = rect
-        img.blit(text, rect.topleft)
-        dflt["head_+"] = img.convert_alpha()
+        dflt["+"] = text.convert_alpha()
 
-        img = body_part.copy()
         text = func.relief_text("-", font, color)
-        ope_minus_text = text
-        rect = text.get_rect()
-        rect.x = round((c.T_W - rect.w) / 2)
-        rect.y = round((c.T_H - rect.h - c.S_H) / 2)
-        ope_minus_rect = rect
-        img.blit(text, rect.topleft)
-        dflt["head_-"] = img.convert_alpha()
+        dflt["-"] = text.convert_alpha()
 
-        operation = func.tile(self.color["white"])
-        img = operation.copy()
-        text = ope_plus_text
-        rect = ope_plus_rect
-        img.blit(text, rect.topleft)
-        dflt["operation_+"] = img.convert_alpha()
-
-        img = operation.copy()
-        text = ope_minus_text
-        rect = ope_minus_rect
-        img.blit(text, rect.topleft)
-        dflt["operation_-"] = img.convert_alpha()
+        img = func.tile(self.color["white"])
+        dflt["operation"] = img.convert_alpha()
 
         font = self.font["number"]
         color = self.color["white_txt"]
@@ -296,43 +293,13 @@ class Textures:
         rect.x = tile_rect.x + round(4.0 * c.S_W)
         header.blit(img, rect.topleft)
 
-        # Score
-        score = str(player.score)
-        font = self.font["number"]
-        color = self.color["white_txt"]
-        img = func.relief_text(score, font, color, depth)
-        rect = img.get_rect()
-        rect.top = nb_y
-        rect.left = c.HEADER_W - c.T_W - round(5.0 * c.S_W)
-        rect.left -= round(rect.w / 2)
-        score_rect = rect
-        header.blit(img, rect.topleft)
-
-        text = "SCORE"
-        font = self.font["stat"]
-        img = func.relief_text(text, font, color, depth)
-        rect = img.get_rect()
-        rect.y = stat_y
-        rect.x = c.HEADER_W - round(3.5 * c.T_W)
-        header.blit(img, rect.topleft)
-
-        # Added score
-        font = self.font["number"]
-        if player.added_score != 0:
-            text = "+" + str(player.added_score)
-            img = func.relief_text(text, font, color, depth)
-            rect = img.get_rect()
-            rect.y = nb_y
-            rect.x = score_rect.right + round(2.0 * c.S_W)
-            header.blit(img, rect.topleft)
-
-        text = c.GAME_NAME.upper()
-        font = self.font["stat"]
-        img = func.relief_text(text, font, color, depth)
-        rect = img.get_rect()
-        rect.y = stat_y
-        rect.x = round(3.0 * c.S_W)
-        header.blit(img, rect.topleft)
+        # text = c.GAME_NAME.upper()
+        # font = self.font["stat"]
+        # img = func.relief_text(text, font, color, depth)
+        # rect = img.get_rect()
+        # rect.y = stat_y
+        # rect.x = round(3.0 * c.S_W)
+        # header.blit(img, rect.topleft)
 
         return header.convert()
 

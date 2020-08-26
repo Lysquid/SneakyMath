@@ -15,6 +15,9 @@ class Tile:
 
     def __init__(self, pos=None):
         self.rect = pygame.Rect(0, 0, c.T_W, c.T_H)
+        self._pos = None
+        self._col = None
+        self._row = None
         if pos:
             self._pos = list(pos)
             self._col = pos[0]
@@ -54,8 +57,12 @@ class SnakePart(Tile):
     def __init__(self, pos=None):
 
         super().__init__(pos)
-        self.image = textures.dflt["snake_part"].copy()
         self.dir = None
+        self.eating = False
+        self.filled = False
+        self.ope = None
+        self.image = None
+        self.update_image()
 
     def move(self):
         """Move according to the direction"""
@@ -91,11 +98,33 @@ class SnakePart(Tile):
         self.rect.x = round((self.col + oriented_offset) * c.T_W)
         oriented_offset = ((self.dir == "down") - (self.dir == "up")) * offset
         self.rect.y = round((self.row + oriented_offset) * c.T_H)
+        if self.eating:
+            self.rect.x -= c.BORDER
+            self.rect.y -= c.BORDER
         return self.rect
+
+    def update_image(self):
+        if self.filled:
+            index = "filled_snake_part"
+        else:
+            index = "snake_part"
+        if self.eating:
+            index += "_eating"
+        image = textures.dflt[index].copy()
+
+        if self.ope:
+            ope_img = textures.dflt[self.ope]
+            part_rect = image.get_rect()
+            rect = ope_img.get_rect()
+            rect.x = round((part_rect.w - rect.w) / 2)
+            rect.y = round((part_rect.h - rect.h - c.S_H) / 2)
+            image.blit(ope_img, rect.topleft)
+            image = image.convert_alpha()
+        self.image = image
 
     def set_ope(self, ope):
         """Change the texture to a given operation"""
-        self.image = textures.dflt["head_" + ope]
+        self.ope = ope
 
 
 class Block(Tile):
@@ -133,4 +162,11 @@ class Operation(Block):
     def __init__(self, ope, pos=None):
         super().__init__(pos)
         self.ope = ope
-        self.image = textures.dflt["operation_" + ope]
+
+        image = textures.dflt["operation"].copy()
+        ope_img = textures.dflt[ope]
+        rect = ope_img.get_rect()
+        rect.x = round((c.T_W - rect.w) / 2)
+        rect.y = round((c.T_H - rect.h - c.S_H) / 2)
+        image.blit(ope_img, rect.topleft)
+        self.image = image.convert_alpha()
