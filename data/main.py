@@ -49,7 +49,6 @@ def main():
 
         # Game loop
         while main_loop and state == "GAME":
-
             if prev_state != "PAUSE":
                 frames = 0
 
@@ -94,17 +93,33 @@ def main():
             if not direction:
                 continue
 
-            player.calc_score()
+            # if player.goal_reached:
+            #     for i in range(player.score + 1):
+            #         if i == player.score:
+            #             snake.add_filled(player.score)
+
+            #         view.draw_field(grid, snake, c.NB_FRAMES)
+            #         view.draw_game()
+            #         view.update()
+            #         view.tick(c.FPS / 5)
+            #         actions = events.get()
+            #         if "quit" in actions:
+            #             main_loop = False
+            #         if "escape" in actions:
+            #             state = "PAUSE"
+            #         if not (main_loop and state == "GAME"):
+            #             break
 
             snake.place_head(grid)
-            snake.move_body(grid, direction)
-            snake.behind_trail(grid)
-            snake.check_front(grid, player)
+            snake.propagate(grid, direction, player.goal_reached)
+            player.calc_score(snake.parts)
+            snake.behind_trail(grid, player)
+            snake.check_front(grid)
 
             snake.goal_reached(player)
 
             if player.goal_reached:
-                player.inc_score()
+
                 player.new_goal()
 
         # Pause
@@ -127,7 +142,7 @@ def main():
         while main_loop and state == "GAME OVER":
 
             if prev_state != state:
-                player.calc_score()
+                player.calc_score(snake.parts)
                 player.compare_scores()
                 view.draw_game_over(player)
                 view.update()
