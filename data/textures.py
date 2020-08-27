@@ -210,17 +210,17 @@ class Textures:
         if font_name == "new_score":
             color = self.color["white_txt"][0]
             rendered = font.render(text, True, color)
-            coords = (c.SCREEN_W / 2, c.SCREEN_H / 2)
+            coords = (c.SCREEN_W / 2, c.SCREEN_H * 0.6)
 
         if font_name == "best_score":
             color = self.color["white_txt"][0]
             rendered = font.render(text, True, color)
-            coords = (c.SCREEN_W / 2, 6 * c.SCREEN_H / 10)
+            coords = (c.SCREEN_W / 2, c.SCREEN_H * 0.7)
 
         if font_name == "footnote":
             color = self.color["white_txt"][2]
             rendered = font.render(text, True, color)
-            coords = (c.SCREEN_W / 2, 19 * c.SCREEN_H / 20)
+            coords = (c.SCREEN_W / 2, 19.2 * c.SCREEN_H / 20)
 
         rect = rendered.get_rect()
         x_coord, y_coord = round(coords[0]), round(coords[1])
@@ -242,6 +242,7 @@ class Textures:
         tile_img = img
         rect = img.get_rect()
         rect.x = round(c.HEADER_W / 3) - round(rect.w / 2)
+        rect.y = round((c.HEADER_H - rect.h) / 2)
         tile_rect = rect
         header.blit(img, rect.topleft)
 

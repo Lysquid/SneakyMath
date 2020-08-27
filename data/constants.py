@@ -1,5 +1,9 @@
 """Global constants file"""
 
+import pygame
+
+pygame.init()
+
 # Infos
 GAME_NAME = "SneakyMath"
 FILES_PATH = "data/files"
@@ -7,27 +11,31 @@ FONTS_PATH = "data/fonts"
 
 
 # Screen
-T_W = 70  # individual tile width and height
-T_H = T_W
+infoObject = pygame.display.Info()
+SCREEN_W = infoObject.current_w
+SCREEN_H = infoObject.current_h
+SCREEN_SIZE = (SCREEN_W, SCREEN_H)
+
+NB_COLS = 20
+NB_ROWS = 10
+
+T_L = min(SCREEN_W // NB_COLS, SCREEN_H // (NB_ROWS + 1))
+T_W = T_L
+T_H = T_L
 T_SIZE = (T_W, T_H)
 S_W = round(T_W / 10)
 S_H = round(T_H / 10)
-NB_COLS = 17
-NB_ROWS = 9
-
-HEADER_H = T_H
-
-SCREEN_W = T_W * NB_COLS
-SCREEN_H = T_H * NB_ROWS + HEADER_H
-SCREEN_SIZE = (SCREEN_W, SCREEN_H)
 
 FIELD_W = T_W * NB_COLS
 FIELD_H = T_H * NB_ROWS
 
+HEADER_H = SCREEN_H - FIELD_H
+
+
 HEADER_W = SCREEN_W
 
-OFFSET_X = 0  # offset of the field in the screen
-OFFSET_Y = T_H
+FIELD_OFFSET_X = round((SCREEN_W - FIELD_W) / 2)
+FIELD_OFFSET_Y = HEADER_H
 
 
 # View

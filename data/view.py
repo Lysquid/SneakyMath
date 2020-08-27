@@ -14,7 +14,8 @@ class View:
     """
 
     def __init__(self):
-        self.screen = pygame.display.set_mode(c.SCREEN_SIZE)
+        self.screen = pygame.display.set_mode(c.SCREEN_SIZE, pygame.FULLSCREEN)
+        pygame.mouse.set_visible(False)
         self.clock = pygame.time.Clock()
         self.header = None
         self.field = None
@@ -41,7 +42,9 @@ class View:
         """Draw the menu screen"""
         self.screen.fill(textures.color["background"])
         textures.text(self, "title", c.GAME_NAME.upper())
-        textures.text(self, "menu", "Appuyer sur [Enter] pour commencer")
+        textures.text(
+            self, "menu", "Appuyer sur [Enter] pour commencer ou [Echap] pour quitter"
+        )
         textures.text(
             self,
             "footnote",
@@ -58,8 +61,8 @@ class View:
     def draw_game_over(self, player):
         """Draw the game over screen"""
         overlay = pygame.Surface(c.SCREEN_SIZE)
-        overlay.fill((0, 0, 0))
-        overlay.set_alpha(180)
+        overlay.fill(textures.color["background"])
+        overlay.set_alpha(210)
         self.screen.blit(overlay, (0, 0))
         textures.text(self, "game_over", "Game Over")
         textures.text(self, "new_score", "Score : " + str(player.score))
@@ -113,6 +116,6 @@ class View:
 
     def draw_game(self):
         """Draw the game screen"""
-        self.screen.fill((0, 0, 0))
-        self.screen.blit(self.field, (0, c.HEADER_H))
+        self.screen.fill(textures.color["background"])
+        self.screen.blit(self.field, (c.FIELD_OFFSET_X, c.FIELD_OFFSET_Y))
         self.screen.blit(self.header, (0, 0))

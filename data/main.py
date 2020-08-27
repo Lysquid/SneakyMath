@@ -42,7 +42,7 @@ def main():
                 view.tick()
 
             actions = events.get()
-            if "quit" in actions or "escape" in actions:
+            if "quit" in actions:
                 main_loop = False
             if "enter" in actions:
                 state = "GAME"
@@ -75,7 +75,7 @@ def main():
                 actions = events.get()
                 if "quit" in actions:
                     main_loop = False
-                if "escape" in actions:
+                if "pause" in actions:
                     state = "PAUSE"
                 if not (main_loop and state == "GAME"):
                     break
@@ -117,7 +117,7 @@ def main():
             actions = events.get()
             if "quit" in actions:
                 main_loop = False
-            if "unpause" in actions:
+            if "pause" in actions:
                 state = "GAME"
 
         # Game over

@@ -9,8 +9,8 @@ class Events:
 
     def __init__(self):
         self.actions_keys = {
-            pg.K_ESCAPE: ("escape", "unpause"),
-            pg.K_RETURN: ("enter", "menu", "unpause"),
+            pg.K_ESCAPE: ("quit",),
+            pg.K_RETURN: ("enter", "menu", "pause"),
             pg.K_F4: ("f4",),
             pg.K_UP: ("up",),
             pg.K_DOWN: ("down",),
