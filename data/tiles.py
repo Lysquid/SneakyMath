@@ -87,12 +87,6 @@ class SnakePart(Tile):
             # 0.5(1+(2x-1)²)
         else:
             offset = progress - 1
-        # if self is snake.tail and snake.inc < 0:
-        #     if self is not snake.head:
-        #         offset = -1
-        #     next_part = snake.parts[-2]
-        #     if self.dir == next_part.dir:
-        #         offset = 1 + offset * 2
 
         oriented_offset = ((self.dir == "right") - (self.dir == "left")) * offset
         self.rect.x = round((self.col + oriented_offset) * c.T_W)

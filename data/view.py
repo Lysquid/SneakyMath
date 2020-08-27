@@ -41,7 +41,7 @@ class View:
         """Draw the menu screen"""
         self.screen.fill(textures.color["background"])
         textures.text(self, "title", c.GAME_NAME.upper())
-        textures.text(self, "menu2", "Appuyer sur [Enter] pour commencer")
+        textures.text(self, "menu", "Appuyer sur [Enter] pour commencer")
         textures.text(
             self,
             "footnote",
@@ -53,7 +53,7 @@ class View:
         """Draw the pause screen"""
         self.screen.fill(textures.color["background"])
         textures.text(self, "pause", "Pause")
-        textures.text(self, "menu2", "Appuyer sur [Entrer] pour reprendre")
+        textures.text(self, "menu", "Appuyer sur [Entrer] pour reprendre")
 
     def draw_game_over(self, player):
         """Draw the game over screen"""
@@ -62,13 +62,13 @@ class View:
         overlay.set_alpha(180)
         self.screen.blit(overlay, (0, 0))
         textures.text(self, "game_over", "Game Over")
-        textures.text(self, "menu2", "Score : " + str(player.score))
+        textures.text(self, "new_score", "Score : " + str(player.score))
         if player.new_best:
             color = textures.color["snake"]
         else:
             color = textures.color["white_txt"]
         textures.text(
-            self, "menu3", "Meilleur score : " + str(player.best_score), color
+            self, "best_score", "Meilleur score : " + str(player.best_score), color
         )
 
     def draw_header(self, snake, player):

@@ -6,6 +6,7 @@ import pygame as pg
 
 import data.constants as c
 import data.textures_func as func
+from data.functions import resource_path
 
 
 class Textures:
@@ -32,15 +33,19 @@ class Textures:
         all the fonts of the game
         """
         fonts = {}
-        font_path = os.path.join("data/fonts", "JosefinSans-SemiBold.ttf")
+        font_path = os.path.join(c.FONTS_PATH, "JosefinSans-SemiBold.ttf")
+        font_path = resource_path(font_path)
 
-        font = func.get_font(font_path, 1.5)
+        font = func.get_font(font_path, 2)
         fonts["pause"] = font
         fonts["game_over"] = font
 
+        font = func.get_font(font_path, 1.2)
+        fonts["new_score"] = font
+        fonts["best_score"] = font
+
         font = func.get_font(font_path, 0.9)
-        fonts["menu2"] = font
-        fonts["menu3"] = font
+        fonts["menu"] = font
 
         font = func.get_font(font_path)
         fonts["number"] = font
@@ -143,11 +148,11 @@ class Textures:
         img = body_part.copy()
         size = (32, 32)
         img = pg.Surface(size, pg.SRCALPHA, 32)
-        img.fill((255, 255, 255))
+        img.fill((255, 255, 255))  # For some reason SRCALPHA is black as an icon
         icon = pg.transform.smoothscale(body_part, size)
         img.blit(icon, (0, 0))
         dflt["icon"] = img.convert_alpha()
-        # icon.set_colorkey((255, 255, 255))
+        icon.set_colorkey((255, 255, 255))
 
         font = self.font["operation"]
         color = self.color["black_txt"]
@@ -192,18 +197,23 @@ class Textures:
             rendered = func.relief_text(text, font, color)
             coords = (c.SCREEN_W / 2, c.SCREEN_H / 3)
 
+        if font_name == "menu":
+            color = self.color["white_txt"][0]
+            rendered = font.render(text, True, color)
+            coords = (c.SCREEN_W / 2, 3 * c.SCREEN_H / 5)
+
         if font_name == "game_over":
             color = self.color["big_number"]
             rendered = func.relief_text(text, font, color)
             coords = (c.SCREEN_W / 2, c.SCREEN_H / 3)
 
-        if font_name == "menu2":
+        if font_name == "new_score":
             color = self.color["white_txt"][0]
             rendered = font.render(text, True, color)
             coords = (c.SCREEN_W / 2, c.SCREEN_H / 2)
 
-        if font_name == "menu3":
-            color = color[0]
+        if font_name == "best_score":
+            color = self.color["white_txt"][0]
             rendered = font.render(text, True, color)
             coords = (c.SCREEN_W / 2, 6 * c.SCREEN_H / 10)
 
@@ -292,14 +302,6 @@ class Textures:
         rect.y = stat_y
         rect.x = tile_rect.x + round(4.0 * c.S_W)
         header.blit(img, rect.topleft)
-
-        # text = c.GAME_NAME.upper()
-        # font = self.font["stat"]
-        # img = func.relief_text(text, font, color, depth)
-        # rect = img.get_rect()
-        # rect.y = stat_y
-        # rect.x = round(3.0 * c.S_W)
-        # header.blit(img, rect.topleft)
 
         return header.convert()
 

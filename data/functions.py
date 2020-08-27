@@ -1,6 +1,8 @@
 """Independant functions file"""
 
 import pygame
+import os
+import sys
 
 
 def blit_alpha(target, source, location, opacity=None):
@@ -19,3 +21,14 @@ def blit_alpha(target, source, location, opacity=None):
         temp.blit(source, (0, 0))
         temp.set_alpha(opacity)
         target.blit(temp, location)
+
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)

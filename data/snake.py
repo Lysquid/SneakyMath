@@ -60,9 +60,6 @@ class Snake:
                 grid[part.pos] = part
             direction = prev_dir
 
-            if eating:
-                print("")
-
             prev_eating = part.eating
             part.eating = eating
             eating = prev_eating

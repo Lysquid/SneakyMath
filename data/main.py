@@ -42,7 +42,7 @@ def main():
                 view.tick()
 
             actions = events.get()
-            if "quit" in actions:
+            if "quit" in actions or "escape" in actions:
                 main_loop = False
             if "enter" in actions:
                 state = "GAME"
@@ -93,23 +93,6 @@ def main():
             if not direction:
                 continue
 
-            # if player.goal_reached:
-            #     for i in range(player.score + 1):
-            #         if i == player.score:
-            #             snake.add_filled(player.score)
-
-            #         view.draw_field(grid, snake, c.NB_FRAMES)
-            #         view.draw_game()
-            #         view.update()
-            #         view.tick(c.FPS / 5)
-            #         actions = events.get()
-            #         if "quit" in actions:
-            #             main_loop = False
-            #         if "escape" in actions:
-            #             state = "PAUSE"
-            #         if not (main_loop and state == "GAME"):
-            #             break
-
             snake.place_head(grid)
             snake.propagate(grid, direction, player.goal_reached)
             player.calc_score(snake.parts)
@@ -119,7 +102,6 @@ def main():
             snake.goal_reached(player)
 
             if player.goal_reached:
-
                 player.new_goal()
 
         # Pause

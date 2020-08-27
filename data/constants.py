@@ -3,6 +3,7 @@
 # Infos
 GAME_NAME = "SneakyMath"
 FILES_PATH = "data/files"
+FONTS_PATH = "data/fonts"
 
 
 # Screen
