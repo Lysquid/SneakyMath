@@ -6,6 +6,7 @@ pygame.init()
 
 # Infos
 GAME_NAME = "SneakyMath"
+VERSION = "1.1"
 FILES_PATH = "data/files"
 FONTS_PATH = "data/fonts"
 
@@ -30,8 +31,6 @@ FIELD_W = T_W * NB_COLS
 FIELD_H = T_H * NB_ROWS
 
 HEADER_H = SCREEN_H - FIELD_H
-
-
 HEADER_W = SCREEN_W
 
 FIELD_OFFSET_X = round((SCREEN_W - FIELD_W) / 2)

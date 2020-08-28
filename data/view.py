@@ -52,7 +52,8 @@ class View:
             self,
             "footnote",
             "© Créé par Romain avec l'aide de Natan "
-            + "pour le prix Bernard Novelli des Trophées Tangente 2020",
+            + "pour le prix Bernard Novelli des Trophées Tangente 2020 — Version "
+            + c.VERSION,
         )
 
     def draw_pause(self):
