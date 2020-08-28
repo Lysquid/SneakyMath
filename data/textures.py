@@ -110,7 +110,7 @@ class Textures:
         dflt["field_tile"] = img.convert()
 
         # ! self.screen.get_size()
-        size = (c.FIELD_W + 2 * c.T_W, c.FIELD_H + 2 * c.T_H)
+        size = (c.FIELD_W, c.FIELD_H)
         img = pg.Surface(size)
         for col in range(c.NB_COLS):
             for row in range(c.NB_ROWS):
@@ -118,7 +118,7 @@ class Textures:
                 img.blit(field_tile, coords)
         dflt["field"] = img.convert()
 
-        size = (c.FIELD_W, c.T_H)
+        size = (c.HEADER_W, c.HEADER_H)
         color = self.color["background"]
         img = pg.Surface(size)
         img.fill(color)
@@ -169,7 +169,7 @@ class Textures:
         rect = text.get_rect()
         rect.x = round((c.T_W - rect.w) / 2)
         rect.y = round((c.T_H - rect.h - c.S_H) / 2)
-        img.blit(text, rect.topleft)
+        img.blit(text, rect)
         dflt["operation_+"] = img.convert()
 
         img = ope_img.copy()
@@ -177,7 +177,7 @@ class Textures:
         rect = text.get_rect()
         rect.x = round((c.T_W - rect.w) / 2)
         rect.y = round((c.T_H - rect.h - c.S_H) / 2)
-        img.blit(text, rect.topleft)
+        img.blit(text, rect)
         dflt["operation_-"] = img.convert()
 
         font = self.font["number"]
@@ -191,7 +191,7 @@ class Textures:
             rect = rendered.get_rect()
             rect.x = round((c.T_W - rect.w) / 2)
             rect.y = round((c.T_H - rect.h) / 2)
-            img.blit(rendered, rect.topleft)
+            img.blit(rendered, rect)
             dflt["number_" + text] = img.convert()
 
         return dflt
@@ -258,9 +258,9 @@ class Textures:
         tile_img = img
         rect = img.get_rect()
         rect.x = round(c.HEADER_W / 3) - round(rect.w / 2)
-        rect.y = round((c.HEADER_H - rect.h) / 2)
+        rect.y = c.HEADER_H - rect.h
         tile_rect = rect
-        header.blit(img, rect.topleft)
+        header.blit(img, rect)
 
         text = str(len(snake))
         font = self.font["number"]
@@ -271,7 +271,7 @@ class Textures:
         rect.y = nb_y
         rect.x = tile_rect.right - c.T_W - round(3.0 * c.S_W)
         rect.x += round((c.T_W - rect.w) / 2)
-        header.blit(img, rect.topleft)
+        header.blit(img, rect)
 
         text = "TAILLE"
         font = self.font["stat"]
@@ -281,7 +281,7 @@ class Textures:
         rect = img.get_rect()
         rect.y = stat_y
         rect.x = tile_rect.left + round(4.0 * c.S_W)
-        header.blit(img, rect.topleft)
+        header.blit(img, rect)
 
         # Increment
         font = self.font["number"]
@@ -294,14 +294,14 @@ class Textures:
             rect = img.get_rect()
             rect.y = nb_y
             rect.x = tile_rect.right + round(2.0 * c.S_W)
-            header.blit(img, rect.topleft)
+            header.blit(img, rect)
 
         # Goal
         img = tile_img
         rect = tile_rect
         rect.x = round(2 / 3 * c.HEADER_W) - round(rect.w / 2)
         tile_rect = rect
-        header.blit(img, rect.topleft)
+        header.blit(img, rect)
 
         text = str(player.goal)
         color = self.color["black_txt"]
@@ -310,7 +310,7 @@ class Textures:
         rect.y = nb_y
         rect.x = tile_rect.right - c.T_W - round(3.0 * c.S_W)
         rect.x += round((c.T_W - rect.w) / 2)
-        header.blit(img, rect.topleft)
+        header.blit(img, rect)
 
         text = "OBJECTIF"
         font = self.font["stat"]
@@ -318,7 +318,7 @@ class Textures:
         rect = img.get_rect()
         rect.y = stat_y
         rect.x = tile_rect.x + round(4.0 * c.S_W)
-        header.blit(img, rect.topleft)
+        header.blit(img, rect)
 
         return header.convert()
 

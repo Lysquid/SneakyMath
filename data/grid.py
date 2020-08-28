@@ -32,9 +32,9 @@ class Grid:
                 elif isinstance(tile, Number):
                     string += str(tile.value)
                 elif isinstance(tile, Operation):
-                    string += "O"
+                    string += str(tile.ope)
                 else:
-                    string += "·"
+                    string += "."
             string += "\n"
         return string
 

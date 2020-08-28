@@ -40,7 +40,8 @@ class Player:
     def start_game(self):
         """Start the game reseting the score and the goal"""
         self.score = 0
-        self.goal = random.randint(10, 20)
+        self.goal = 0
+        self.new_goal()
 
     def new_goal(self):
         """Generate a new goal"""
@@ -68,9 +69,7 @@ class Player:
         diff = 3 + round(self.score ** 1.2 / 20)
         new_goal = self.goal
         while (new_goal + diff) > self.goal > (new_goal - diff):
-            new_goal = random.randint(
-                mini, min(c.NB_COLS * c.NB_ROWS, round(mini ** 1.1 + 10))
-            )
+            new_goal = random.randint(mini, min(c.NB_TILES, round(mini ** 1.1 + 10)))
         self.goal = new_goal
 
     def calc_score(self, parts):

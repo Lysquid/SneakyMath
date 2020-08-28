@@ -2,11 +2,11 @@
 
 import pygame
 
-pygame.init()
+pygame.init()  # Needed to get screen resolution
 
 # Infos
 GAME_NAME = "SneakyMath"
-VERSION = "1.1"
+VERSION = "1.2"
 FILES_PATH = "data/files"
 FONTS_PATH = "data/fonts"
 
@@ -19,6 +19,7 @@ SCREEN_SIZE = (SCREEN_W, SCREEN_H)
 
 NB_COLS = 20
 NB_ROWS = 10
+NB_TILES = NB_COLS * NB_ROWS
 
 T_L = min(SCREEN_W // NB_COLS, SCREEN_H // (NB_ROWS + 1))
 T_W = T_L
@@ -30,8 +31,8 @@ S_H = round(T_H / 10)
 FIELD_W = T_W * NB_COLS
 FIELD_H = T_H * NB_ROWS
 
+HEADER_W = FIELD_W
 HEADER_H = SCREEN_H - FIELD_H
-HEADER_W = SCREEN_W
 
 FIELD_OFFSET_X = round((SCREEN_W - FIELD_W) / 2)
 FIELD_OFFSET_Y = HEADER_H

@@ -98,6 +98,7 @@ class SnakePart(Tile):
         return self.rect
 
     def update_image(self):
+        """Update the image to change of colors/text"""
         if self.filled:
             index = "filled_snake_part"
         else:
@@ -112,13 +113,9 @@ class SnakePart(Tile):
             rect = ope_img.get_rect()
             rect.x = round((part_rect.w - rect.w) / 2)
             rect.y = round((part_rect.h - rect.h - c.S_H) / 2)
-            image.blit(ope_img, rect.topleft)
+            image.blit(ope_img, rect)
             image = image.convert_alpha()
         self.image = image
-
-    def set_ope(self, ope):
-        """Change the texture to a given operation"""
-        self.ope = ope
 
 
 class Block(Tile):

@@ -15,9 +15,7 @@ class View:
 
     def __init__(self):
 
-        self.screen = pygame.display.set_mode(
-            c.SCREEN_SIZE, pygame.DOUBLEBUF | pygame.FULLSCREEN
-        )
+        self.screen = pygame.display.set_mode(c.SCREEN_SIZE, pygame.FULLSCREEN)
         pygame.mouse.set_visible(False)
         self.clock = pygame.time.Clock()
         self.header = None
@@ -80,8 +78,9 @@ class View:
 
     def draw_header(self, snake, player):
         """Draw the header and save it for the frames cycle"""
+        self.screen.fill(textures.color["background"])
         self.header = textures.render_header(snake, player)
-        self.screen.blit(self.header, (0, 0))
+        self.screen.blit(self.header, (c.FIELD_OFFSET_X, 0))
 
     def draw_field(self, grid, snake, frames):
         """Draw everything from the grid onto the screen"""
@@ -121,7 +120,7 @@ class View:
             if duplicate:
                 rects.append(rect)
             for rect in rects:
-                blit_alpha(field, part.image, rect.topleft, alpha)
+                blit_alpha(field, part.image, rect, alpha)
         self.field = field
 
     def draw_game(self):

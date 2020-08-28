@@ -28,7 +28,7 @@ def rounded_rec(image, color, rect, radius):
     for rec_rect in rec_rects:
         pg.draw.rect(temp, color, rec_rect)
 
-    image.blit(temp, rect.topleft)
+    image.blit(temp, rect)
     return image.convert_alpha()
 
 

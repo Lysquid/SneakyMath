@@ -91,10 +91,9 @@ def main():
                 break
             if not direction:
                 continue
+
             snake.place_head(grid)
-
             snake.propagate(grid, direction, player.goal_reached)
-
             player.calc_score(snake.parts)
             snake.behind_trail(grid, player)
             snake.check_front(grid)
