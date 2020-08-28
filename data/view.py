@@ -46,7 +46,7 @@ class View:
         self.screen.fill(textures.color["background"])
         textures.text(self, "title", c.GAME_NAME.upper())
         textures.text(
-            self, "menu", "Appuyer sur [Enter] pour commencer ou [Echap] pour quitter"
+            self, "menu", "Appuyer sur [Entrée] pour commencer ou [Echap] pour quitter"
         )
         textures.text(
             self,
