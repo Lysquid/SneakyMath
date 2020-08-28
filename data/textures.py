@@ -116,7 +116,7 @@ class Textures:
             for row in range(c.NB_ROWS):
                 coords = (c.T_W * col, c.T_H * row)
                 img.blit(field_tile, coords)
-        dflt["field"] = img.convert_alpha()
+        dflt["field"] = img.convert()
 
         size = (c.FIELD_W, c.T_H)
         color = self.color["background"]
@@ -150,9 +150,9 @@ class Textures:
         img = pg.Surface(size, pg.SRCALPHA, 32)
         img.fill((255, 255, 255))  # For some reason SRCALPHA is black as an icon
         icon = pg.transform.smoothscale(body_part, size)
+        # icon.set_colorkey((255, 255, 255))
         img.blit(icon, (0, 0))
         dflt["icon"] = img.convert_alpha()
-        icon.set_colorkey((255, 255, 255))
 
         font = self.font["operation"]
         color = self.color["black_txt"]
@@ -162,21 +162,37 @@ class Textures:
         text = func.relief_text("-", font, color)
         dflt["-"] = text.convert_alpha()
 
-        img = func.tile(self.color["white"])
-        dflt["operation"] = img.convert_alpha()
+        ope_img = dflt["field_tile"].copy()
+        ope_img.blit(func.tile(self.color["white"]), (0, 0))
+        img = ope_img.copy()
+        text = dflt["+"].copy()
+        rect = text.get_rect()
+        rect.x = round((c.T_W - rect.w) / 2)
+        rect.y = round((c.T_H - rect.h - c.S_H) / 2)
+        img.blit(text, rect.topleft)
+        dflt["operation_+"] = img.convert()
+
+        img = ope_img.copy()
+        text = dflt["-"].copy()
+        rect = text.get_rect()
+        rect.x = round((c.T_W - rect.w) / 2)
+        rect.y = round((c.T_H - rect.h - c.S_H) / 2)
+        img.blit(text, rect.topleft)
+        dflt["operation_-"] = img.convert()
 
         font = self.font["number"]
         color = self.color["white_txt"]
         for nbr in range(1, 10):
             nbr_color = func.color_palette(func.nbr_color(nbr))
-            img = func.tile(nbr_color)
+            img = dflt["field_tile"].copy()
+            img.blit(func.tile(nbr_color), (0, 0))
             text = str(nbr)
             rendered = func.relief_text(text, font, color)
             rect = rendered.get_rect()
             rect.x = round((c.T_W - rect.w) / 2)
             rect.y = round((c.T_H - rect.h) / 2)
             img.blit(rendered, rect.topleft)
-            dflt["number_" + text] = img.convert_alpha()
+            dflt["number_" + text] = img.convert()
 
         return dflt
 

@@ -14,7 +14,10 @@ class View:
     """
 
     def __init__(self):
-        self.screen = pygame.display.set_mode(c.SCREEN_SIZE, pygame.FULLSCREEN)
+
+        self.screen = pygame.display.set_mode(
+            c.SCREEN_SIZE, pygame.DOUBLEBUF | pygame.FULLSCREEN
+        )
         pygame.mouse.set_visible(False)
         self.clock = pygame.time.Clock()
         self.header = None
@@ -77,6 +80,7 @@ class View:
     def draw_header(self, snake, player):
         """Draw the header and save it for the frames cycle"""
         self.header = textures.render_header(snake, player)
+        self.screen.blit(self.header, (0, 0))
 
     def draw_field(self, grid, snake, frames):
         """Draw everything from the grid onto the screen"""
@@ -88,8 +92,7 @@ class View:
             for col in range(c.NB_COLS):
                 tile = grid[(col, row)]
                 if isinstance(tile, Block):
-                    rect = tile.calc_rect()
-                    field.blit(tile.image, rect.topleft)
+                    field.blit(tile.image, tile.calc_rect())
 
         # Draw the snake parts
         for part in reversed(snake.parts):
@@ -101,21 +104,25 @@ class View:
             rect = part.calc_rect(progress, snake)
             rects.append(rect)
             rect = rect.copy()
+            duplicate = False
             if rect.x < 0:
                 rect.x += c.FIELD_W
+                duplicate = True
             elif rect.x + c.T_W > c.FIELD_W:
                 rect.x -= c.FIELD_W
+                duplicate = True
             if rect.y < 0:
                 rect.y += c.FIELD_H
+                duplicate = True
             elif rect.y + c.T_H > c.FIELD_H:
                 rect.y -= c.FIELD_H
-            rects.append(rect)
+                duplicate = True
+            if duplicate:
+                rects.append(rect)
             for rect in rects:
                 blit_alpha(field, part.image, rect.topleft, alpha)
         self.field = field
 
     def draw_game(self):
         """Draw the game screen"""
-        self.screen.fill(textures.color["background"])
         self.screen.blit(self.field, (c.FIELD_OFFSET_X, c.FIELD_OFFSET_Y))
-        self.screen.blit(self.header, (0, 0))

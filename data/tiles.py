@@ -156,11 +156,4 @@ class Operation(Block):
     def __init__(self, ope, pos=None):
         super().__init__(pos)
         self.ope = ope
-
-        image = textures.dflt["operation"].copy()
-        ope_img = textures.dflt[ope]
-        rect = ope_img.get_rect()
-        rect.x = round((c.T_W - rect.w) / 2)
-        rect.y = round((c.T_H - rect.h - c.S_H) / 2)
-        image.blit(ope_img, rect.topleft)
-        self.image = image.convert_alpha()
+        self.image = textures.dflt["operation_" + str(ope)]

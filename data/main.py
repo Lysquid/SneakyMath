@@ -70,8 +70,8 @@ def main():
                 view.draw_field(grid, snake, frames)
                 view.draw_game()
                 view.update()
-
                 view.tick()
+
                 actions = events.get()
                 if "quit" in actions:
                     main_loop = False
@@ -83,7 +83,6 @@ def main():
                 new_dir = events.calc_dir(snake.dir)
                 if new_dir:
                     direction = new_dir
-
                 frames += 1
 
             if snake.dead:
@@ -92,9 +91,10 @@ def main():
                 break
             if not direction:
                 continue
-
             snake.place_head(grid)
+
             snake.propagate(grid, direction, player.goal_reached)
+
             player.calc_score(snake.parts)
             snake.behind_trail(grid, player)
             snake.check_front(grid)

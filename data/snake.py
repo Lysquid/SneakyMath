@@ -1,5 +1,7 @@
 """Snake class file"""
 
+import random
+
 import data.constants as c
 from data.tiles import SnakePart, Number, Operation
 
@@ -11,8 +13,9 @@ class Snake:
     def __init__(self):
         self.dead = False
         self.inc = 4
-        center_pos = (c.NB_COLS // 2, c.NB_ROWS // 2)
-        self.parts = [SnakePart(center_pos)]
+        x_pos = c.NB_COLS // 2 - random.randint(0, (c.NB_COLS + 1) % 2)
+        y_pos = c.NB_ROWS // 2 - random.randint(0, (c.NB_ROWS + 1) % 2)
+        self.parts = [SnakePart((x_pos, y_pos))]
         self.behind_queue = []
         self.behind_pos = None
         self.ope = "change to +"

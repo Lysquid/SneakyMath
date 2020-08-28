@@ -39,8 +39,8 @@ FIELD_OFFSET_Y = HEADER_H
 
 
 # View
-FPS = 40
-NB_FRAMES = 9
+FPS = 60
+NB_FRAMES = 12
 
 # Gameplay
 SCORE_INC = 3
