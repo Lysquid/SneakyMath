@@ -3,3 +3,6 @@ venv
 .idea
 __pycache__
 scores
+output-linux
+output-windows
+SneakyMath.spec
