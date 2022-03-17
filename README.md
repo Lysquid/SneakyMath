@@ -1,6 +1,6 @@
 # SneakyMath
 
-SneakyMath is a Python game using [pygame](https://github.com/pygame/pygame).
+SneakyMath is a Python game using the [pygame library](https://github.com/pygame/pygame).
 It's a game of mental arithmetic with inspiration from the classic Snake.
 
 ## Installation
