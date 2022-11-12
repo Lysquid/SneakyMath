@@ -8,16 +8,16 @@ A mental arithmetic game inspired by the classic Snake. It is written in Python 
 
 Download the executable for your system in the Releases section.
 
-On Linux, give execute permissions to the file and run it :
+On Linux, download `SneakyMath`, give it execute permissions and run it :
 
 ```bash
 chmod +x SneakyMath
 ./SneakyMath
 ```
 
-On Windows, run `SneakyMath.exe`
+On Windows, download and run `SneakyMath.exe`.
 
-Alternatively, you can run the source code with Python after installing the library specified in the [requirements](requirements.txt). The main file is [sneakymath.py](sneakymath.py).
+Alternatively, you can run the source code with Python after installing the library specified in the [requirements](requirements.txt) with pip. The main file is [sneakymath.py](sneakymath.py).
 
 ## How to play
 
